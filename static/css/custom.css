@@ -1,0 +1,134 @@
+
+@font-face {
+ font-family: Vazir;
+ font-style: normal;
+ font-weight: normal;
+ src: url('../fonts/Vazir.eot');
+ src: url('../fonts/Vazir.eot?#iefix') format('embedded-opentype'),
+ url('../fonts/Vazir.woff2') format('woff2'),
+ url('../fonts/Vazir.woff') format('woff'),
+ url('../fonts/Vazir.ttf') format('truetype');
+}
+@font-face {
+ font-family: Vazir;
+ font-style: normal;
+ font-weight: bold;
+ src: url('../fonts/Vazir-Bold.eot');
+ src: url('../fonts/Vazir-Bold.eot?#iefix') format('embedded-opentype'),
+ url('../fonts/Vazir-Bold.woff2') format('woff2'),
+ url('../fonts/Vazir-Bold.woff') format('woff'),
+ url('../fonts/Vazir-Bold.ttf') format('truetype');
+}
+
+
+.head{
+    height: 120px;
+}
+
+.header{
+    color: black;
+}
+
+.header_text{
+    font-family: 'Vazir', Arial, sans-serif;
+    font-weight: bold;
+}
+
+.header:hover{
+    color: orange;
+}
+
+.card_text{
+    font-family: 'Vazir', Arial, sans-serif;
+    font-weight: normal;
+}
+
+.slide_home{
+    height: 600px;
+}
+
+.category_card{
+    text-decoration: none;
+    transform: scale(1);
+}
+.category_card:hover {
+    text-decoration: none;
+    transform: scale(1.1);
+    box-shadow: 0 0 2px 1px rgba(0, 140, 186, 0.5);
+    opacity: 0.7;
+}
+
+.header_tooltip {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.header_tooltip .tooltip_text {
+    width: 600px !important;
+    top: 120%;
+    right: -250px;
+    margin-bottom: -60px;
+    position: absolute;
+    z-index: 1;
+    background-color: #e9ecef;
+    padding: 10px 5px 10px 5px;
+}
+
+.header_tooltip .tooltip_text::after {
+    content: " ";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent #e9ecef transparent;
+    opacity: 0.9;
+}
+
+.header_tooltip .tooltip_text {
+  opacity: 0;
+  transition: opacity 1s;
+}
+
+.header_tooltip:hover .tooltip_text {
+  opacity: 0.9;
+}
+
+.category_product{
+    text-decoration: none;
+    transform: scale(1);
+}
+.category_product:hover {
+    text-decoration: none;
+    z-index: 1;
+    transform: scale(1.01);
+    opacity: 0.8;
+}
+
+/*single_product*/
+.text_prop{
+    text-align: justify;
+    text-justify: inter-word;
+    height: 250px;
+    border-style: inset;
+}
+.text_prop:hover{
+    border-color: #17a2b8;
+    transform: scale(1.1);
+}
+
+.opinion-text_input{
+    height: 120px;
+    text-align: right;
+    vertical-align: top;
+    text-indent: 50px;
+}
+
+.single_product_img:hover{
+    z-index: 2;
+    left: 300px;
+    transform: scale(1.7) translate(-250px,0);
+}
+

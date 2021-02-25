@@ -1,0 +1,65 @@
+{% extends 'account/base.html' %}
+{% block title %}
+    ثبت نام
+{% endblock %}
+{% block body %}
+    {% load static %}
+    <div style="background-image: url('{% static 'images/register.png' %}');background-repeat: no-repeat; background-size: cover">
+        <div class="container h-100">
+            <div class="row justify-content-center vh-100 align-items-center">
+                <div class="col-7 border border-danger p-4 rounded bg-light" dir="rtl">
+                    <form method="post" action="{% url 'register' %}">
+                        {% csrf_token %}
+
+                        <div class="form-row justify-content-between text-right" dir="rtl">
+                            <div class="form-group col-md-6">
+                                <label class="card_text pr-1"><b>نام :</b></label>
+                                {{ form.first_name }}
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label class="card_text pr-1"><b>نام خانوادگی :</b></label>
+                                {{ form.last_name }}
+                            </div>
+                        </div>
+
+                        <div class="form-row justify-content-between text-right" dir="rtl">
+                            <div class="form-group col-md-12">
+                                <label for="inputEmail4" class="card_text pr-1"><b>ایمیل :</b></label>
+                                <span dir="ltr">{{ form.email }}</span>
+                            </div>
+                            <div class="form-group col-md-12">
+                                <label for="inputEmail4" class="card_text pr-1"><b>موبایل :</b></label>
+                                <span dir="ltr">{{ form.mobile }}</span>
+                            </div>
+                        </div>
+
+                        <div class="form-row justify-content-between text-right mt-2">
+                            <div class="form-group col-md-6">
+                                <label for="inputPassword4" class="card_text pr-1"><b>رمز عبور :</b></label>
+                                <span dir="ltr">{{ form.password1 }}</span>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="inputPassword4" class="card_text pr-1"><b>تکرار رمز عبور :</b></label>
+                                <span dir="ltr">{{ form.password2 }}</span>
+                            </div>
+                        </div>
+
+
+                        <div class="row justify-content-between">
+                            <a href="{% url 'login' %}" class="col-2 my-auto"><b class="text-info header_text">ورود ؟</b></a>
+                            <button type="submit" class="col-2 btn btn-danger mt-3 pt-1 ml-4" onclick="register_alert()"><b>ثبت نام</b></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        function register_alert(){
+            alert("پروفایل شما در فروشگاه ثبت شد!");
+        }
+    </script>
+{% endblock %}

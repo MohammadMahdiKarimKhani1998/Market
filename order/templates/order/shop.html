@@ -1,0 +1,281 @@
+{% extends 'order/base.html' %}
+{% block title %}سبد خرید{% endblock %}
+{% block body %}
+    {% load order_extra %}
+    {% include 'order/header.html' %}
+
+    <!-- navs -->
+    <nav aria-label="breadcrumb" class="text-right" dir="rtl">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item header_text"><a href="{% url 'home' %}">خانه</a></li>
+            <li class="breadcrumb-item active" aria-current="page"> {{ user }} </li>
+        </ol>
+    </nav>
+    <!-- end_navs -->
+
+
+    <!-- table_products -->
+        <div class="container">
+            <div class="row d-flex justify-content-between mb-5" dir="rtl">
+
+                <div class="col-8 p-0">
+                    <table class="table col-12 border border-info rounded text-right pr-3 mt-3 mb-5">
+                        <thead class="col-12 bg-light">
+                            <tr class="col-12">
+                                <th scope="col" class="header_text text-center">نام محصول</th>
+                                <th scope="col" class="header_text text-center">فروشگاه</th>
+                                <th scope="col" class="header_text text-center">قیمت</th>
+                                <th scope="col" class="header_text text-center">تعداد</th>
+                                <th scope="col" class="header_text text-center">حذف</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for basket_item in basketitems_list %}
+                                <tr class="text-right" id="row{{ basket_item.shop_product.product.id }}">
+                                    <th scope="row" class="col-1">
+                                        <a href="{% url 'product' basket_item.shop_product.product.slug basket_item.shop_product.shop.slug %}">
+                                            <div class="d-flex justify-content-between category_product" style="width: 150px">
+                                                <img src="/media/{{ basket_item.shop_product.product.image }}" alt="product.img" style="width: 50px">
+                                                <div class="small align-content-center mr-2 pt-2 text-dark">{{ basket_item.shop_product.product.slug }}</div>
+                                            </div>
+                                        </a>
+                                    </th>
+                                    <td class="text-center">{{ basket_item.shop_product.shop.name }}</td>
+                                    <td class="text-center pt-4">{{ basket_item.shop_product.price }}</td>
+                                    <td class="d-flex justify-content-center">
+                                        <div class="input-group p-0" style="width: 100px">
+                                            <input type="text" class="form-control text-center" placeholder="1 - {{ basket_item.shop_product.quantity }}" onkeyup="add_payment({{ basket_item.shop_product.price }},{{ basket_item.shop_product.quantity }},{{ basket_item.id }})" id="price{{ basket_item.id }}">
+                                        </div>
+                                    </td>
+                                    <td class="text-center pt-4"><input type="checkbox" id="{{ basket_item.id }}"></td>
+                                </tr>
+                            {% endfor %}
+                            <tr class="text-right">
+                                <th scope="row" class="col-1">
+                                </th>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td class="text-center pt-3"><button type="button" class="btn btn-primary card_text" onclick="edit_table()">ویرایش</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="card col-12 p-0">
+                        <h6 class="card-header col-12 text-right header_text">
+                            نحوه ارسال :
+                        </h6>
+                        <div class="card-body">
+                            <blockquote class="blockquote mb-0">
+                                <div class="d-flex justify-content-around col-12 pl-5">
+                                    <div class="d-flex justify-content-around col-3">
+                                        <input type="radio" class="m-auto" id="radio1" onclick="delivery_radio(1)">
+                                        <i class="fas fa-envelope fa-4x text-info"></i>
+                                    </div>
+                                    <div class="d-flex justify-content-around col-3">
+                                        <input type="radio" class="m-auto" id="radio2" onclick="delivery_radio(2)">
+                                        <i class="fas fa-shipping-fast fa-4x text-info"></i>
+                                    </div>
+                                </div>
+                            </blockquote>
+                        </div>
+                    </div>
+
+
+                    <div id="accordion" class="col-12 mt-5 p-0" dir="rtl">
+                        <div class="card">
+                            <div class="card-header text-right card_text" id="headingOne">
+                                <h5 class="mb-0">
+                                <button class="btn btn-link text-dark" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne" style="text-decoration: none">
+                                    <b>انتخاب آدرس :</b>
+                                </button>
+                                </h5>
+                            </div>
+
+                            <div id="collapseOne" class="collapse show col-12" aria-labelledby="headingOne" data-parent="#accordion">
+                                <div class="card-body col-12" dir="ltr">
+                                    {% for adr in address %}
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <div class="input-group-text">
+                                                    <input type="checkbox" aria-label="Checkbox for following text input">
+                                                </div>
+                                            </div>
+                                            <div class="card bg-light col-11 p-0 text-right" dir="rtl">
+                                                <div class="card-body">
+                                                    <div class="d-flex justify-content-around mb-2">
+                                                        <div class="col-6 card_text">
+                                                            شهر : {{ adr.city }}
+                                                        </div>
+                                                        <div class="col-6 card_text">
+                                                            خیابان : {{ adr.street }}
+                                                        </div>
+                                                    </div>
+                                                    <div class="d-flex justify-content-around">
+                                                        <div class="col-6 card_text">
+                                                            کوچه : {{ adr.allay }}
+                                                        </div>
+                                                        <div class="col-6 card_text">
+                                                            کد پستی : {{ adr.zip_code }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header text-right card_text" id="headingOne">
+                                <h5 class="mb-0">
+                                <button class="btn btn-link text-dark" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseOne" style="text-decoration: none" href="">
+                                    <b>+ افزودن آدرس جدید :</b>
+                                </button>
+                                </h5>
+                            </div>
+
+                            <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
+                                <div class="card-body">
+                                    <form dir="rtl" class="col-12 text-right" action="{% url 'address' %}" method="post">{% csrf_token %}
+                                        <div class="d-flex justify-content-between col-12">
+                                            <div class="form-group col-md-6">
+                                                <label class="card_text mr-1">شهر :</label>
+                                                {{ form.city }}
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                                <label class="card_text mr-1">خیابان :</label>
+                                                {{ form.street }}
+                                            </div>
+                                        </div>
+
+                                        <div class="d-flex justify-content-between col-12 mt-4">
+                                            <div class="form-group col-md-6">
+                                                <label class="card_text mr-1">کوچه :</label>
+                                                {{ form.allay }}
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                                <label class="card_text mr-1">کد پستی :</label>
+                                                {{ form.zip_code }}
+                                            </div>
+                                        </div>
+
+                                        <div class="text-left col-12 mt-4 ml-3">
+                                            <button type="submit" class="btn btn-primary card_text ml-3 bg-warning text-dark">ثبت آدرس</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div class="col-lg-4 col-sm-12 mt-3">
+                    <div class="card bg-light col-lg-11 col-sm-12 pl-0 mb-5">
+                        <div class="card-body d-flex align-content-between flex-wrap col-11 pr-0 pl-0">
+                            <h5 class="card-title text-right mb-3">مارکت</h5>
+                            <div class="card-text col-12 h-50 w-100 mb-0 pr-0 pl-0 mt-0 pt-0">
+                                <ul class="list-group list-group-flush col-12 w-100 mb-0">
+                                    <li class="list-group-item text-right small card_text"><i class="fas fa-shield-alt text-info"></i> گارانتی اصالت و سلامت فیزیکی کالا</li>
+                                    <li class="list-group-item">
+                                        <div class="text-right card_text">قیمت :</div>
+                                        <div class="d-flex justify-content-between w-100 col-12 text-left mt-4">
+                                            <div class="text-danger">تومان</div>
+                                            <div><span id="total_price"></span> <i class="fas fa-tag text-dark"></i></div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                            <button class="btn btn-primary w-100 header_text bg-danger mt-3" id="add_basket" onclick="add_order()">پرداخت</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    {% include 'order/footer.html' %}
+{% endblock %}
+{% block scripts %}
+    <script>
+
+        {#edit table#}
+        function edit_table(){
+            $("input").filter(function (){
+                if($(this).is(":checked")){
+                    const data = JSON.stringify({basket_item_id:$(this).attr("id")})
+                    $.ajax({
+                        type: "post",
+                        url: "{% url 'edit_table' %}",
+                        data: data,
+                        success: function (response) {
+                            const data = JSON.parse(response);
+                            console.log(data.r)
+                        }});
+                    $(this).parents("tr").remove()
+                    console.log("yes")
+                }
+            });
+        }
+
+
+        {#calculate payment#}
+        let old_prices = [];
+        let payment = 0;
+
+        function add_payment(price, max, p_id){
+            const i = "price" + p_id.toString();
+            const count = document.getElementById(i).value;
+
+            if(count<=max){
+                if(count>=1){
+                    if (old_prices[p_id]){
+                        payment = payment - old_prices[p_id];
+                        old_prices[p_id] = count*price;
+                        payment = payment + old_prices[p_id];
+                        $("#total_price").text(payment)
+                    }else {
+                        old_prices[p_id] = count*price;
+                        payment = payment + old_prices[p_id];
+                        $("#total_price").text(payment)
+                    }
+                }
+
+            }
+            if(count==0){
+                payment = payment - old_prices[p_id];
+                old_prices[p_id] = 0;
+                $("#total_price").text(payment)
+            }
+        }
+
+
+        {#radio check#}
+        let state = [false, false];
+        function delivery_radio(i){
+
+            let j = i % 2 + 1;
+            let this_id = "#radio" + i.toString();
+            let other_id = "#radio" + j.toString();
+
+            if (state[i-1]){
+                $(this_id).prop("checked", false);
+                state[i-1] = $(this_id).is(":checked");
+            }else {
+                $(this_id).prop("checked", true);
+                $(other_id).prop("checked", false);
+                state[i-1] = $(this_id).is(":checked");
+                state[j-1] = !$(this_id).is(":checked");
+            }
+
+        }
+
+
+
+
+    </script>
+{% endblock %}

@@ -1,0 +1,290 @@
+{% extends 'product/base.html' %}
+{% block title %}Market{% endblock %}
+{% block css %}
+    {% load static %}
+    <link href="{% static 'css/single_product.css' %}" rel="stylesheet">
+{% endblock %}
+{% block body %}
+    {% load static product_extra %}
+    {% include 'product/header.html' %}
+
+    <!-- nav -->
+    <nav class="bg-white" aria-label="breadcrumb" dir="rtl">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item header_text"><a href="{% url 'home' %}">خانه</a></li>
+            <li class="breadcrumb-item header_text"><a href="{% url 'category' product.category.slug 1 %}">{{ product.category }}</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ product.slug }}</li>
+        </ol>
+    </nav>
+
+    <!-- product introduction -->
+    <div class="container">
+        <div class="row mb-5 mt-5" dir="rtl">
+            <ul class="header_text"><li>{{ product.name }}</li></ul>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row d-flex justify-content-between mb-5" dir="rtl">
+            <div class="col-lg-4 col-sm-6 d-flex align-items-center">
+                <img src="/media/{{ product.image }}" alt="product.img" class="img-thumbnail border-info single_product_img">
+            </div>
+            <div class="d-flex flex-column col-lg-4 col-sm-6 shadow-sm p-3 bg-white rounded" dir="rtl">
+                <div class="text-right mb-5 header_text">مشخصات:</div>
+                <p class="overflow-auto text-right text_prop small rounded"> {{ product.detail }}</p>
+            </div>
+            <div class="col-lg-4 col-sm-12">
+                <div class="card bg-light col-lg-11 col-sm-12 pl-0 h-100">
+                    <div class="card-body d-flex align-content-between flex-wrap col-11 pr-0 pl-0">
+                        <h5 class="card-title text-right mb-0">مارکت</h5>
+                        <div class="card-text col-12 h-50 w-100 mb-0 pr-0 pl-0 mt-0 pt-0">
+                            <ul class="list-group list-group-flush col-12 w-100 mb-0">
+                                <li class="list-group-item text-right small card_text"><i class="fas fa-shield-alt text-info"></i> گارانتی اصالت و سلامت فیزیکی کالا</li>
+                                {% if product_shop.quantity < 4 %}
+                                    {% if product_shop.quantity == 0 %}
+                                        <li class="list-group-item text-right small card_text"> <i class="fas fa-times text-danger"></i> ناموجود</li>
+                                    {% else %}
+                                        <li class="list-group-item text-right small card_text"> <i class="fas fa-exclamation-triangle text-warning"></i> تنها {{ product_shop.quantity }} عدد از محصول باقی مانده است !</li>
+                                    {% endif %}
+                                {% endif %}
+                                {% if product_shop.quantity > 3 %}
+                                    <li class="list-group-item text-right small card_text"> <i class="fas fa-check text-success"></i> موجود</li>
+                                {% endif %}
+                                <li class="list-group-item">
+                                    <div class="text-right card_text">قیمت :</div>
+                                    <div class="d-flex justify-content-between w-100 col-12 text-left mt-4">
+                                        <div class="text-danger">{{ product.property.unit }}</div>
+                                        <div>{{ product.property.price }} <i class="fas fa-tag text-dark"></i></div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    {% if product_shop.quantity == 0 %}
+                        <a class="btn btn-primary w-100 header_text bg-danger mt-0 disabled">انتقال به سبد خرید</a>
+                    {% else %}
+                        <button class="btn btn-primary w-100 header_text bg-danger mt-0" id="add_basket" onclick="add_basket()">انتقال به سبد خرید</button>
+                    {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- shops -->
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-right header_text" dir="rtl">فروشگاه های ارائه دهنده این کالا :</div>
+                <div class="card col-12 w-100 border-0 mt-3 mb-5" style="width: 18rem;">
+                    <ul class="list-group list-group-flush">
+                        {% for shop in shops %}
+                            <li class="list-group-item text-right d-flex justify-content-between" dir="rtl">
+                                <a href="{% url 'product' product.slug shop.shop.slug %}" class="col-12 text-right d-flex justify-content-between category_product">
+                                    <img src="/media/{{ shop.shop.image }}" alt="logo" width="30" height="30">
+                                    <div class="text-dark">{{ shop.shop.name }}</div>
+                                    <div class="text-info text-danger">{{ shop.price }} <span class="text-dark">{{ shop.unit }}</span></div>
+                                    <div>
+                                        {% if product_shop.quantity < 4 %}
+                                            {% if product_shop.quantity == 0 %}
+                                                <div class="text-right small card_text text-dark"> <i class="fas fa-times text-danger"></i> ناموجود</div>
+                                            {% else %}
+                                                <div class="text-right small card_text text-dark"> <i class="fas fa-exclamation-triangle text-warning"></i> تنها {{ product_shop.quantity }} عدد از محصول باقی مانده است !</div>
+                                            {% endif %}
+                                        {% endif %}
+                                        {% if product_shop.quantity > 3 %}
+                                            <div class="text-right small card_text text-dark"> <i class="fas fa-check text-success"></i> موجود</div>
+                                        {% endif %}
+                                    </div>
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- opinions -->
+    <div class="container">
+        <div class="row">
+            <div id="accordion" dir="rtl" class="col-12 text-right">
+                <div class="card border-0">
+                    <div id="headingOne">
+                        <h5 class="mb-0 text-right">
+                            <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne" style="text-decoration: none">
+                                <div class="nav nav-tabs">
+                                    <div class="nav-item">
+                                        <a class="nav-link active header_text">نظرات</a>
+                                    </div>
+                                </div>
+                            </button>
+                        </h5>
+                    </div>
+                    <hr class="col-12 bg-dark">
+
+                    <div id="collapseOne" class="collapse show bg-light" aria-labelledby="headingOne" data-parent="#accordion">
+                        <div class="card-body">
+
+                            <div class="card col-12 border-0 m-0">
+                                <div id="show_comments" class="col-12 mt-3 text-left">
+
+                                    <ul class="list-group list-group-flush">
+                                        {% for comment in comments %}
+                                            <li class="list-group-item mt-2 border-dark">
+                                                <div class="d-flex justify-content-between col-12">
+                                                    {% if comment.user.image %}
+                                                        <img src="/media/{{ comment.user.image }}" class="img-thumbnail col-2 ml-3" alt="user.img" style="height: 150px; opacity: 0.8">
+                                                    {% else %}
+                                                        <img src="{% static 'images/user.png' %}" class="img-thumbnail col-2 ml-3" alt="user.img" style="height: 150px; opacity: 0.8">
+                                                    {% endif %}
+                                                    <div class="card col-10 mt-3 mb-2">
+                                                        <div class="card-body">
+                                                            <h5 class="card-title text-right text-info" id="name{{ comment.id }}">{{ comment.user }}</h5>
+                                                            <h6 class="card-subtitle mb-2 text-muted text-right text-info" id="date{{ comment.id }}">{{ comment.created_at }}</h6>
+                                                            <p class="card-text text-right" dir="rtl" id="content{{ comment.id }}">{{ comment.content }}</p>
+                                                            {% if comment.rate < 3 %}
+                                                                <div class="progress" dir="ltr">
+                                                                    <div class="progress-bar progress-bar-striped bg-danger" role="progressbar" style="width: {% multiplication comment.rate 10 %}%;" aria-valuenow="{% multiplication comment.rate 10 %}" aria-valuemin="0" aria-valuemax="100">{% multiplication comment.rate 10 %}%</div>
+                                                                </div>
+                                                            {% elif comment.rate < 8 %}
+                                                                <div class="progress" dir="ltr">
+                                                                    <div class="progress-bar progress-bar-striped bg-warning" role="progressbar" style="width: {% multiplication comment.rate 10 %}%;" aria-valuenow="{% multiplication comment.rate 10 %}" aria-valuemin="0" aria-valuemax="100">{% multiplication comment.rate 10 %}%</div>
+                                                                </div>
+                                                            {% else %}
+                                                                <div class="progress" dir="ltr">
+                                                                    <div class="progress-bar progress-bar-striped bg-success" role="progressbar" style="width: {% multiplication comment.rate 10 %}%;" aria-valuenow="{% multiplication comment.rate 10 %}" aria-valuemin="0" aria-valuemax="100">{% multiplication comment.rate 10 %}%</div>
+                                                                </div>
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <button type="button" class="btn btn-outline-success bg-gradient-light col-lg-2 col-md-4 col-sm-6" id="like{{ comment.id }}" onclick="like_dislike({{ comment.id }}, true)" dir="rtl"><i class="fa fa-thumbs-up text-black-50"></i><span class="ml-1" id="like_count{{ comment.id }}"> {{ comment.like_count }}</span></button>
+                                                <button type="button" class="btn btn-outline-danger col-lg-2 col-md-4 col-sm-6" id="dislike{{ comment.id }}" onclick="like_dislike({{ comment.id }}, false)"><i class="fa fa-thumbs-down text-black-50"></i><span class="ml-1" id="dislike_count{{ comment.id }}"> {{ comment.dislike_count }}</span></button>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+
+                                </div>
+                            </div>
+
+                            <form id="comment_form" method="post" action="{% url 'product' product.slug product.property.shop.slug %}" class="col-12">{% csrf_token %}
+                                <div class="form-row justify-content-between">
+                                    <div class="form-group col-md-12 align-text-top">
+                                        <label class="col-md-12 text-right mt-5 mb-2 p-0 card_text" dir="rtl" for="content"><i class="far fa-comments"></i> پیشنهادات: </label>
+                                        <textarea id="content" name="content" type="text" class="form-control" dir="rtl"></textarea>
+                                    </div>
+                                    <div class="form-group col-md-12 text-left">
+                                        <div class="border border-warning col-12 mb-2 rounded pb-1 pt-1">
+                                            <div class="d-flex justify-content-between">
+                                                <label for="satisfy_range" class="col-6 text-right card_text"><i class="fas fa-poll-h text-warning"></i> میزان رضایت از کالا (0 - 10) :</label>
+                                                <div class="font-weight-bold pt-1 pl-1 text-info" id="satisfy_range_show"></div>
+                                            </div>
+                                            <input type="range" id="satisfy_range" name="satisfy_range" min="0" max="10" step="1" dir="ltr" class="col-12 p-0" onclick="show_satisfy_range()">
+                                        </div>
+                                        <input type="submit" value="ارسال" class="card_text btn rounded border-dark">
+                                    </div>
+                                </div>
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+    {% include 'product/footer.html' %}
+
+{% endblock %}
+
+{% block scripts %}
+    <script>
+
+        function like_dislike(comment_id, status){
+            const data = JSON.stringify({comment_id: comment_id, status: status})
+            $.ajax({
+                type: "post",
+                url: "{% url 'like_dislike' %}",
+                data: data,
+                success: function (response) {
+                    const data = JSON.parse(response)
+                    $(`#like_count${data.comment_id}`).text(" "+ data.like_num);
+                    $(`#dislike_count${data.comment_id}`).text(" "+ data.dislike_num);
+                }});
+        }
+
+        document.getElementById("comment_form").addEventListener("submit", function (event){
+            event.preventDefault()
+            const content = $('#content').val()
+            const rate = $('#satisfy_range').val()
+            const data = JSON.stringify({content: content, product:'{{ product.slug }}', rate: rate})
+            $.ajax({
+                type: "post",
+                url: "{% url 'comment' %}",
+                data: data,
+                success: function (response){
+                    const data = JSON.parse(response)
+                    const rate = data.rate * 10;
+                    if(data.image){
+                        $('#show_comments').prepend(`
+                            <li class="list-group-item mt-2 border-dark">
+                                <div class="d-flex justify-content-between col-12">
+                                    <img src="/media/${data.image}" class="img-thumbnail col-2 ml-3" alt="user.img" style="height: 150px; opacity: 0.8">
+                                    <div class="card col-10 mt-3 mb-2">
+                                        <div class="card-body">
+                                            <h5 class="card-title text-right text-info" id="name${data.comment_id}">${data.user}</h5>
+                                            <h6 class="card-subtitle mb-2 text-muted text-right text-info" id="date${data.comment_id}">${data.created_at}</h6>
+                                            <p class="card-text text-right" dir="rtl" id="content${data.comment_id}">${data.content}</p>
+                                            <div class="progress" dir="ltr">
+                                                <div class="progress-bar progress-bar-striped" role="progressbar" style="width: ${rate}%;" aria-valuenow="${rate}" aria-valuemin="0" aria-valuemax="100">${rate}%</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-outline-success bg-gradient-light col-lg-2 col-md-4 col-sm-6" id="like${data.comment_id}" onclick="like_dislike(${data.comment_id}, true)" dir="rtl"><i class="fa fa-thumbs-up text-black-50"></i><span class="ml-1" id="like_count${data.comment_id}"> ${data.like_num}</span></button>
+                                <button type="button" class="btn btn-outline-danger col-lg-2 col-md-4 col-sm-6" id="dislike${data.comment_id}" onclick="like_dislike(${data.comment_id}, false)"><i class="fa fa-thumbs-down text-black-50"></i><span class="ml-1" id="dislike_count${data.comment_id}"> ${data.dislike_num}</span></button>
+                            </li>
+                        `)
+                    }else {
+                        $('#show_comments').prepend(`
+                            <li class="list-group-item mt-2 border-dark">
+                                <div class="d-flex justify-content-between col-12">
+                                    <img src="{% static 'images/user.png' %}" class="img-thumbnail col-2 ml-3" alt="user.img" style="height: 150px">
+                                    <div class="card col-10 mt-3 mb-2">
+                                        <div class="card-body">
+                                            <h5 class="card-title text-right text-info" id="name${data.comment_id}">${data.user}</h5>
+                                            <h6 class="card-subtitle mb-2 text-muted text-right text-info" id="date${data.comment_id}">${data.created_at}</h6>
+                                            <p class="card-text text-right" dir="rtl" id="content${data.comment_id}">${data.content}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-outline-success bg-gradient-light col-lg-2 col-md-4 col-sm-6" id="like${data.comment_id}" onclick="like_dislike(${data.comment_id}, true)" dir="rtl"><i class="fa fa-thumbs-up text-black-50"></i><span class="ml-1" id="like_count${data.comment_id}"> ${data.like_num}</span></button>
+                                <button type="button" class="btn btn-outline-danger col-lg-2 col-md-4 col-sm-6" id="dislike${data.comment_id}" onclick="like_dislike(${data.comment_id}, false)"><i class="fa fa-thumbs-down text-black-50"></i><span class="ml-1" id="dislike_count${data.comment_id}"> ${data.dislike_num}</span></button>
+                            </li>
+                        `)
+                    }
+                }
+            });
+        }, false);
+
+        $('#satisfy_range_show').text(document.getElementById('satisfy_range').value)
+        function show_satisfy_range(){
+            $('#satisfy_range_show').text(document.getElementById('satisfy_range').value)
+        }
+
+        {#add_product_to_basket#}
+        function add_basket(){
+            const data = JSON.stringify({product_slug: '{{ product.slug }}', shop_product_id: {{ product_shop.id }} })
+            $.ajax({
+                type: "post",
+                url: "{% url 'add_product_to_basket' %}",
+                data: data,
+                success: function (response) {
+                    const data = JSON.parse(response)
+                    alert(data.alert)
+                }});
+        }
+
+    </script>
+{% endblock %}

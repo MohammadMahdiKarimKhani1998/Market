@@ -1,0 +1,36 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Mohammad Mahdi Karim Khani">
+
+    <!--  = Bootstrap =  -->
+    <link href="{% static 'css/bootstrap.css' %}" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+
+    <!-- = fontawesome.css -->
+    <link href="{% static 'css/all.css' %}" rel="stylesheet">
+
+    {% block css %}{% endblock %}
+</head>
+<body>
+{% block body %}{% endblock %}
+
+<!-- = fontawesome.js -->
+<script defer src="{% static 'js/all.js' %}"></script>
+
+<script src="{% static 'js/jquery.min.js' %}"></script>
+<script src="{% static 'js/popper.min.js' %}"></script>
+<script src="{% static 'js/bootstrap.min.js' %}"></script>
+
+<!-- =custom.js = -->
+<script src="{% static 'js/custom.js' %}"></script>
+
+{% block scripts %}{% endblock %}
+</body>
+</html>

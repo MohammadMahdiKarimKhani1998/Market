@@ -1,0 +1,255 @@
+{% extends 'product/base.html' %}
+{% block title %}Market{% endblock %}
+{% block css %}
+    {% load static%}
+    <link href="{% static 'css/category_products.css' %}" rel="stylesheet">
+{% endblock %}
+{% block body %}
+    {% load static %}
+    {% include 'product/header.html' %}
+
+    <!-- navs -->
+    <nav aria-label="breadcrumb" class="text-right" dir="rtl">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item header_text"><a href="{% url 'home' %}">خانه</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ category.title }}</li>
+        </ol>
+    </nav>
+    <!-- end_navs -->
+
+
+    <div class="d-flex justify-content-around mt-5 pr-2 pl-2 mb-2">
+
+        <!-- products -->
+        <div class="w-75 pl-3">
+            <div class="w-100 shadow-sm rounded border mb-3">
+
+                <nav id="navbar-example2" class="navbar navbar-light bg-light shadow-sm rounded" dir="rtl">
+                    <div class="navbar-brand header_text text-dark text-right">محصولات</div>
+                </nav>
+
+
+                <div class="p-3 d-flex flex-wrap justify-content-end" id="products">
+                    {% for product in product_filter %}
+                        <a class="d-flex justify-content-between" href="{% url 'product' product.slug product.property.shop.slug %}" target="{{ product.brand }}" id="{{ product.property.price }}">
+                            <div class="card bg-light category_product" style="width: 16.8rem;">
+                                <img src="/media/{{ product.image }}" class="card-img-top img-thumbnail" alt="product.img" style="height: 250px">
+                                <div class="card-body text-right card_text" dir="rtl">
+                                  <p class="card-text card_text small text-dark">{{ product.name }}</p>
+                                </div>
+                                <ul class="list-group list-group-flush bg-secondary">
+                                    <li class="list-group-item d-flex bg-light">
+                                        <div class="p-2"><i class="fas fa-money-bill text-danger"></i></div>
+                                        <div class="text-black-50 p-2">{{ product.property.price }}</div>
+                                        <div class="ml-auto p-2">{{ product.property.unit }}</div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </a>
+                    {% endfor %}
+                </div>
+
+
+            <!-- pagination -->
+                <nav aria-label="Page navigation example" class="d-flex justify-content-center">
+                    {% if num < 4 %}
+                        <ul class="pagination">
+                            {% for i in num_pages %}
+                                <li class="page-item"><a class="page-link" href="{% url 'category' category.slug i %}">{{ i }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </nav>
+            <!-- end_pagination -->
+
+
+            </div>
+        </div>
+
+
+        <!-- filters -->
+        <div class="d-flex flex-column w-25 pr-3 pl-3">
+
+            <!-- brand -->
+            <div class="w-100 shadow-sm rounded border mb-3">
+
+                <nav id="navbar-example2" class="navbar navbar-light bg-light shadow-sm rounded text-right" dir="rtl">
+                    <div class="navbar-brand card_text">برند</div>
+                </nav>
+
+                <form class="overflow-auto p-3" style="height: 200px" dir="rtl">{% csrf_token %}
+                    <div class="d-flex flex-column mb-1 w-100">
+                        {% for catbra in category.category_brand %}
+                            <div class="d-flex justify-content-between mt-1 w-100">
+                                <input type="checkbox" id="{{ catbra.id }}" onclick="filter_brand({{ catbra.id }})" value="{{ catbra.brand }}" class="ui-bar">
+                                <label for="{{ catbra.id }}">{{ catbra.brand.name }}</label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </form>
+            </div>
+            <!-- end_brand -->
+
+
+            <!-- price -->
+            <div class="w-100 shadow-sm rounded border mb-3">
+
+                <nav id="navbar-example2" class="navbar navbar-light bg-light shadow-sm rounded text-right" dir="rtl">
+                    <a class="navbar-brand card_text" href="#">قیمت</a>
+                </nav>
+
+                <div class="middle col-12 mt-4">
+                    <div class="multi-range-slider">
+                        <input type="range" id="input-left" onclick="showLeftMin()" class="col-12 pr-0">
+                        <input type="range" id="input-right" onclick="showRightMax()" class="col-12 pr-0">
+
+                        <div class="slider">
+                            <div class="track border"></div>
+                            <div class="range bg-info"></div>
+                            <div class="thumb left bg-info border"></div>
+                            <div class="thumb right bg-info border"></div>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <label for="input-left" class="small text-info">{{ category.min_price }}</label>
+                            <label for="input-left" class="small text-info">{{ category.max_price }}</label>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-3">
+                            <div id="showmin" class="card_text border text-secondary rounded"></div>
+                            <div id="showmax" class="card_text border text-secondary rounded"></div>
+                        </div>
+
+                        <button type="button" class="btn btn-warning col-12 mt-3" id="filter_btn" onclick="filter_btn()">
+                            <i class="fas fa-filter"></i> <span class="card_text">اعمال فیلتر</span>
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+            <!-- end_price -->
+
+        </div>
+        <!-- end_filter -->
+    </div>
+
+    {% include 'product/footer.html' %}
+
+{% endblock %}
+
+{% block scripts %}
+    <script>
+
+        let cache = $("a[target]");
+
+        {#price_filter#}
+        let cache_id = [];
+        for (let ht = 0; ht < cache.length; ht++){
+            cache_id.push(cache[ht].id)
+        }
+        function filter_btn(){
+            const min = document.getElementById("input-left").value;
+            const max = document.getElementById("input-right").value;
+            const data = JSON.stringify({min:min, max:max, cache_ids:cache_id})
+            $.ajax({
+                type: "post",
+                url: "{% url 'category' category.slug 1 %}",
+                data: data,
+                success: function (response) {
+                    const data = JSON.parse(response);
+                    $("#products").html(cache);
+                    for (var i in data){
+                        id_rm = "#" + i;
+                        $(id_rm).remove()
+                    }
+                }});
+        }
+        {#end_price_filter#}
+
+
+        {#brand_filter#}
+        let ids = [];
+        let cacher = cache;
+
+        function filter_brand(slug) {
+            const cb = document.getElementById(slug);
+            let id = "a[target=" + cb.value + "]";
+            if (cb.checked) {
+                $("#products").html(cache);
+                cacher = cacher.not(id);
+                cacher.remove()
+            } else {
+                cacher = cacher.add(id);
+                console.log(cacher.length)
+                if (cacher.length===cache.length){
+                    $("#products").html(cache);
+                }else {
+                    $("#products").html(cache);
+                    cacher.remove()
+                }
+            }
+        }
+        {#end_brand_filter#}
+
+
+        {#making_price_filter_range#}
+        var inputLeft = document.getElementById("input-left");
+        var inputRight = document.getElementById("input-right");
+
+        var thumbLeft = document.querySelector(".slider>.thumb.left");
+        var thumbRight = document.querySelector(".slider>.thumb.right");
+        var range = document.querySelector(".slider>.range");
+
+        function setLeftValue(){
+            var _this = inputLeft,
+                min = parseInt(_this.min),
+                max = parseInt(_this.max);
+
+            _this.value = Math.min(parseInt(_this.value), parseInt(inputRight.value) -({{ category.max_price }}-{{ category.min_price }})*0.105)
+
+            var percent = ((_this.value - min)/(max - min))*100;
+
+            thumbLeft.style.left = percent + "%";
+            range.style.left = percent + "%";
+        }
+        setLeftValue();
+
+        function setRightValue(){
+            var _this = inputRight,
+                min = parseInt(_this.min),
+                max = parseInt(_this.max);
+
+            _this.value = Math.max(parseInt(_this.value), parseInt(inputLeft.value) +({{ category.max_price }}-{{ category.min_price }})*0.05)
+
+            var percent = ((_this.value - min)/(max - min))*100;
+
+            thumbRight.style.right = (100 - percent) + "%";
+            range.style.right = (100 - percent) + "%";
+        }
+        setRightValue();
+
+        inputLeft.addEventListener("input", setLeftValue);
+        inputRight.addEventListener("input", setRightValue);
+
+        function showLeftMin(){
+            var val = document.getElementById("input-left").value-100;
+            $("#showmin").text("حداقل :" +" "+ val)
+        }
+
+        function showRightMax(){
+            var val = document.getElementById("input-right").value+100;
+            $("#showmax").text("حداکثر :" +" "+ val)
+        }
+
+
+        $("#input-left").attr("min", {{ category.min_price }}-100)
+        $("#input-left").attr("max", {{ category.max_price }}+100)
+        $("#input-left").val(({{ category.max_price }}-{{ category.min_price }})*0.42)
+
+        $("#input-right").attr("min", {{ category.min_price }}-100)
+        $("#input-right").attr("max", {{ category.max_price }}+100)
+        $("#input-right").val(({{ category.max_price }}-{{ category.min_price }})*0.88)
+
+
+    </script>
+{% endblock %}
