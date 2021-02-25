@@ -1,0 +1,31 @@
+{% extends 'home/base.html' %}
+{% block title %}about us{% endblock %}
+{% block css %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/About.css' %}">
+{% endblock %}
+{% block body %}
+    {% load static %}
+    {% include 'home/header.html' %}
+    <div class="u-body">
+    <section class="container bg-light mt-5">
+      <div class="u-container-style u-expanded-width u-group u-palette-3-base u-shape-rectangle u-group-1">
+        <div class="d-flex justify-content-center col-12">
+          <img alt="my image" src="{% static 'images/me.jpg' %}" class="col-4 border rounded mb-3" data-image-width="883" data-image-height="1062">
+        </div>
+      </div>
+        <div class="d-flex justify-content-center col-12 mb-5">
+            <h2 class="u-text u-text-1">PYTHON&nbsp;<b style="">DEVELOPER</b></h2>
+        </div>
+
+        <div class="d-flex justify-content-center col-12">
+            <ul class="u-text u-text-2">
+                <li style="">Email : m.mahdi.k.khani@gmail.com</li>
+                <li style="">github :&nbsp;https://github.com/MohammadMahdiKarimKhani1998</li>
+            </ul>
+        </div>
+
+    </section>
+    </div>
+    {% include 'home/footer.html' %}
+{% endblock %}

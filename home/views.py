@@ -27,6 +27,10 @@ class ErrorView(TemplateView):
     template_name = "home/404.html"
 
 
+class AboutView(TemplateView):
+    template_name = "home/About.html"
+
+
 @csrf_exempt
 def search(request):
     data = json.loads(request.body)
